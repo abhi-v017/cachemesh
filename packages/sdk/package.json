@@ -1,0 +1,26 @@
+{
+  "name": "@cachemesh/sdk",
+  "version": "0.1.0",
+  "description": "Developer-friendly Universal Caching SDK for CacheMesh",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\""
+  },
+  "dependencies": {
+    "@cachemesh/shared": "workspace:*",
+    "@cachemesh/core": "workspace:*",
+    "@cachemesh/adapters": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
