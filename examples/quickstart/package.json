@@ -10,7 +10,7 @@
     "run:dist": "node dist/index.js"
   },
   "dependencies": {
-    "@cachemesh/sdk": "workspace:*"
+    "@cachemesh/sdk": "*"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

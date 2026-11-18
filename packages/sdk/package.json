@@ -16,9 +16,9 @@
     "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\""
   },
   "dependencies": {
-    "@cachemesh/shared": "workspace:*",
-    "@cachemesh/core": "workspace:*",
-    "@cachemesh/adapters": "workspace:*"
+    "@cachemesh/shared": "*",
+    "@cachemesh/core": "*",
+    "@cachemesh/adapters": "*"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

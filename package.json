@@ -1,15 +1,21 @@
 {
-  "name": "cachemesh-monorepo",
+  "name": "cachemesh",
   "version": "0.1.0",
   "private": true,
   "description": "CacheMesh - Universal Caching SDK & Multi-Level Cache Engine",
   "type": "module",
-  "packageManager": "pnpm@12.16.1",
+  "workspaces": [
+    "packages/*",
+    "examples/*",
+    "apps/*"
+  ],
   "scripts": {
-    "build": "pnpm -r run build",
+    "build": "npm run build --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
-    "clean": "pnpm -r run clean"
+    "start": "node examples/quickstart/dist/index.js",
+    "demo": "npm run build && node examples/quickstart/dist/index.js",
+    "clean": "npm run clean --workspaces --if-present"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

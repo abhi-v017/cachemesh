@@ -31,7 +31,7 @@ cachemesh/
 ├── examples/
 │   └── quickstart/ # Runnable demonstration of getOrSet, coalescing, tags, and telemetry
 ├── vitest.config.ts
-├── pnpm-workspace.yaml
+├── package.json    # Standard npm workspaces configuration
 └── tsconfig.base.json
 ```
 
@@ -42,7 +42,7 @@ cachemesh/
 ### Installation
 
 ```bash
-pnpm add @cachemesh/sdk
+npm install @cachemesh/sdk
 ```
 
 ### 1. Basic In-Memory Caching
@@ -102,14 +102,15 @@ const p2 = await getProductById('prod_123'); // Cached hit!
 ## Running the Quickstart Demo
 
 ```bash
-pnpm run build
-node examples/quickstart/dist/index.js
+npm install
+npm run build
+npm start
 ```
 
 ## Running the Test Suite
 
 ```bash
-pnpm test
+npm test
 ```
 
 ---
