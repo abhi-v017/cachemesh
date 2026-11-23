@@ -1,25 +1,39 @@
 {
-  "name": "cachemesh",
-  "version": "0.1.0",
-  "private": true,
-  "description": "CacheMesh - Universal Caching SDK & Multi-Level Cache Engine",
+  "name": "minicache",
+  "version": "1.0.0",
   "type": "module",
-  "workspaces": [
-    "packages/*",
-    "examples/*",
-    "apps/*"
-  ],
+  "description": "Lightweight, Redis-inspired in-memory caching server built from scratch in TypeScript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
-    "start": "node examples/quickstart/dist/index.js",
-    "demo": "npm run build && node examples/quickstart/dist/index.js",
-    "clean": "npm run clean --workspaces --if-present"
+    "bench": "tsup benchmarks/benchmark.ts --out-dir dist/benchmarks --no-clean && node dist/benchmarks/benchmark.js",
+    "cli": "tsup examples/interactive-cli.ts --out-dir dist/examples --no-clean && node dist/examples/interactive-cli.js",
+    "example:basic": "tsup examples/basic-usage.ts --out-dir dist/examples --no-clean && node dist/examples/basic-usage.js",
+    "example:raw": "tsup examples/raw-tcp-client.ts --out-dir dist/examples --no-clean && node dist/examples/raw-tcp-client.js",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "start": "node dist/index.js",
+    "dev": "tsup --watch --onSuccess \"node dist/index.js\""
   },
+  "keywords": [
+    "cache",
+    "redis",
+    "in-memory",
+    "lru",
+    "tcp",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.10.1",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "@types/node": "^26.6.6",
+    "eslint": "^10.15.0",
+    "prettier": "^3.10.1",
+    "tsup": "^9.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.1"
   }
 }
