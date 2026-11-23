@@ -116,7 +116,7 @@ describe("CacheMeshClient Integration", () => {
 
   it("should reject cleanly if server connection fails", async () => {
     // Port 1 is reserved and typically closed
-    const deadClient = new MiniCacheClient({ port: 1, host: "127.0.0.1", connectTimeoutMs: 200 });
+    const deadClient = new CacheMeshClient({ port: 1, host: "127.0.0.1", connectTimeoutMs: 200 });
 
     await expect(deadClient.ping()).rejects.toThrow();
     await deadClient.close();

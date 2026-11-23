@@ -1,9 +1,9 @@
-# MiniCache — Executive Project Overview
+# CacheMesh — Executive Project Overview
 
 ## 1. What This Project Actually Is
-**MiniCache** is a standalone, lightweight, in-memory key-value caching server inspired by Redis. It is written from scratch in TypeScript using Node.js's native `net` module, without relying on Redis or any third-party caching libraries.
+**CacheMesh** is a standalone, lightweight, in-memory key-value caching server inspired by Redis. It is written from scratch in TypeScript using Node.js's native `net` module, without relying on Redis or any third-party caching libraries.
 
-Applications connect to MiniCache over standard TCP sockets and exchange newline-delimited JSON commands to store, read, expire, and delete cached values in sub-millisecond time.
+Applications connect to CacheMesh over standard TCP sockets and exchange newline-delimited JSON commands to store, read, expire, and delete cached values in sub-millisecond time.
 
 ---
 
@@ -11,16 +11,16 @@ Applications connect to MiniCache over standard TCP sockets and exchange newline
 
 ### Problem 1: Database Bottlenecks & High Read Latency
 * **Database I/O**: Querying relational databases (PostgreSQL, MySQL) or disks takes anywhere from **5 to 20 milliseconds** due to disk seeks, query planning, indexing, and connection pooling.
-* **MiniCache Solution**: Storing data directly in RAM drops retrieval latency to **~0.1 milliseconds over TCP** (and sub-microsecond in-process), shielding databases from read overload.
+* **CacheMesh Solution**: Storing data directly in RAM drops retrieval latency to **~0.1 milliseconds over TCP** (and sub-microsecond in-process), shielding databases from read overload.
 
 ### Problem 2: The In-Process Cache Limitation
 * **The Trap**: A simple in-process `new Map()` works within one Node process, but if you scale horizontally to 5 web instances behind a load balancer, each instance has its own isolated, out-of-sync cache. Furthermore, every application restart or deployment wipes the cache.
-* **MiniCache Solution**: Provides a centralized, network-accessible cache that multiple application instances share as a single source of truth.
+* **CacheMesh Solution**: Provides a centralized, network-accessible cache that multiple application instances share as a single source of truth.
 
 ### Problem 3: Memory Exhaustion & Stale Data
 * **Memory Exhaustion**: Without bounds, caching infinite keys eventually crashes the server with Out-of-Memory (OOM).
 * **Zombie Keys**: If an item is given an expiration time but never queried again, pure lazy expiration leaves it in RAM forever.
-* **MiniCache Solution**: Enforces a strict **$O(1)$ LRU (Least Recently Used) eviction policy** when capacity is reached, and runs a **dual-strategy TTL engine** (passive check on read + active periodic background sweep) to safely eliminate dead keys.
+* **CacheMesh Solution**: Enforces a strict **$O(1)$ LRU (Least Recently Used) eviction policy** when capacity is reached, and runs a **dual-strategy TTL engine** (passive check on read + active periodic background sweep) to safely eliminate dead keys.
 
 ---
 
@@ -36,7 +36,7 @@ Applications connect to MiniCache over standard TCP sockets and exchange newline
 | **CommandHandler**| `src/commands/command-handler.ts`| The router and validator. Checks incoming JSON commands (`SET`, `GET`, `DEL`, `EXISTS`, `INFO`, `PING`), validates parameters, and calls the engine. |
 | **TCPServer** | `src/server/tcp-server.ts` | Manages raw TCP sockets via Node's `net.Server`. Handles concurrent clients, abrupt disconnects (`ECONNRESET`), and graceful shutdowns. |
 | **MetricsCollector**| `src/stats/metrics.ts` | Observability engine. Calculates live request counts, hits, misses, writes, deletes, evictions, expired keys, and hit ratio ($H = \frac{\text{Hits}}{\text{Hits} + \text{Misses}}$). |
-| **MiniCacheClient**| `src/client/client.ts` | Developer-friendly Node.js SDK. Implements Promise-based methods (`get`, `set`, etc.) and supports request pipelining over a single socket using a FIFO queue. |
+| **CacheMeshClient**| `src/client/client.ts` | Developer-friendly Node.js SDK. Implements Promise-based methods (`get`, `set`, etc.) and supports request pipelining over a single socket using a FIFO queue. |
 
 ---
 
@@ -56,7 +56,7 @@ Applications connect to MiniCache over standard TCP sockets and exchange newline
 ## 5. File Structure
 
 ```
-minicache/
+cachemesh/
 ├── src/
 │   ├── index.ts                 # Server daemon entry point & startServer()
 │   ├── server/
@@ -68,7 +68,7 @@ minicache/
 │   ├── engine/
 │   │   ├── types.ts             # CacheEntry, CacheValue, IMemoryStore
 │   │   ├── memory-store.ts      # O(1) Map wrapper with LRU order tracking
-│   │   ├── ttl-manager.ts       # Lazy check + active bounded sweep
+│   │   ├── ttl-manager.ts       # Expiration logic (lazy check + periodic sweep)
 │   │   ├── lru-eviction.ts      # Capacity enforcement & recency pruning
 │   │   └── cache-engine.ts      # Core caching engine coordinator
 │   ├── commands/
@@ -105,14 +105,14 @@ minicache/
 ### 1. Start the Server
 ```bash
 npm start
-# Output: [MiniCache] Server listening on 127.0.0.1:6380
+# Output: [CacheMesh] Server listening on 127.0.0.1:6380
 ```
 
 ### 2. Connect via the Node.js Client SDK
 ```typescript
-import { MiniCacheClient } from "minicache/client";
+import { CacheMeshClient } from "cachemesh/client";
 
-const client = new MiniCacheClient({ host: "127.0.0.1", port: 6380 });
+const client = new CacheMeshClient({ host: "127.0.0.1", port: 6380 });
 await client.connect();
 
 // Store with optional TTL (in seconds)
@@ -139,13 +139,13 @@ await client.close();
 npm run cli
 ```
 ```text
-minicache> SET session:1 {"auth":true} 10
+cachemesh> SET session:1 {"auth":true} 10
 OK (Stored 'session:1' with 10s TTL)
 
-minicache> GET session:1
+cachemesh> GET session:1
 { "auth": true }
 
-minicache> INFO
+cachemesh> INFO
 --- Server Statistics ---
   Total Requests: 2
   Cache Hits:     1
@@ -165,5 +165,5 @@ echo '{"command":"GET","key":"user:101"}' | nc 127.0.0.1 6380
 * **Automated Tests**: `npm test` runs 75 unit and integration tests across 10 test suites.
 * **Benchmark Results (`npm run bench`)**:
   * Direct Map: ~4,642,000 ops/sec (0.0002 ms avg latency)
-  * MiniCache Engine: ~1,876,000 ops/sec (0.0005 ms avg latency)
-  * MiniCache TCP Loopback: ~8,400 ops/sec (0.1193 ms avg latency)
+  * CacheMesh Engine: ~1,876,000 ops/sec (0.0005 ms avg latency)
+  * CacheMesh TCP Loopback: ~8,400 ops/sec (0.1193 ms avg latency)

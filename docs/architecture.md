@@ -1,8 +1,8 @@
-# MiniCache Architecture & Request Lifecycle
+# CacheMesh Architecture & Request Lifecycle
 
 ## 1. System Overview
 
-MiniCache is structured as a decoupled, layered pipeline where networking, stream parsing, command dispatching, storage, and eviction operate as distinct modules.
+CacheMesh is structured as a decoupled, layered pipeline where networking, stream parsing, command dispatching, storage, and eviction operate as distinct modules.
 
 ```
 +─────────────────────────────────────────────────────────────────────────+
@@ -74,7 +74,7 @@ Here is what happens when a client sends `{"command":"SET","key":"user:1","value
 
 ## 3. Cache Eviction & Expiration Strategy
 
-MiniCache employs two distinct policies to ensure memory bounds and data freshness:
+CacheMesh employs two distinct policies to ensure memory bounds and data freshness:
 
 ### A. Dual-Strategy TTL Expiration
 1. **Passive / Lazy Expiration**:
@@ -90,13 +90,13 @@ MiniCache employs two distinct policies to ensure memory bounds and data freshne
    - Sweep timers use `timer.unref()` to ensure they never block Node.js from shutting down cleanly.
 
 ### B. Least Recently Used (LRU) Eviction
-- MiniCache exploits the ECMAScript `Map` specification guarantee that iteration order reflects key insertion/re-insertion order.
+- CacheMesh exploits the ECMAScript `Map` specification guarantee that iteration order reflects key insertion/re-insertion order.
 - **Reading a key**: `store.touch(key)` deletes the key and re-inserts it with updated `accessedAt`, pushing it to the very back (Most Recently Used).
-- **Evicting at capacity**: When `store.size() >= maxEntries`, `store.getOldestKey()` fetches `store.keys().next().value` (the front of the Map iterator) in $O(1)$ time and removes it.
+- **Evicting at capacity**: When `store.size >= maxEntries`, `store.getOldestKey()` fetches `store.keys().next().value` (the front of the Map iterator) in $O(1)$ time and removes it.
 
 ---
 
 ## 4. Concurrency Model
 
-* MiniCache runs on the **Node.js Reactor Pattern** (libuv event loop).
+* CacheMesh runs on the **Node.js Reactor Pattern** (libuv event loop).
 * Because all JavaScript execution inside the server is single-threaded, cache state operations are **intrinsically thread-safe**. There is zero mutex locking, condition variable overhead, or race condition hazard between concurrent TCP connections.

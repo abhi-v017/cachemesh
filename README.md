@@ -1,8 +1,8 @@
-# MiniCache ⚡
+# CacheMesh ⚡
 
 A lightweight, standalone, in-memory key-value caching server inspired by Redis, engineered from scratch in TypeScript and Node.js.
 
-MiniCache demonstrates how caching engines work internally—featuring an $O(1)$ LRU eviction algorithm, dual-strategy TTL expiration, newline-delimited TCP stream framing, request pipelining, and real-time cache telemetry.
+CacheMesh demonstrates how caching engines work internally—featuring an $O(1)$ LRU eviction algorithm, dual-strategy TTL expiration, newline-delimited TCP stream framing, request pipelining, and real-time cache telemetry.
 
 ```
                   ┌─────────────────────────────────────────┐
@@ -63,8 +63,8 @@ MiniCache demonstrates how caching engines work internally—featuring an $O(1)$
 ### Setup
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/minicache.git
-cd minicache
+git clone https://github.com/your-username/cachemesh.git
+cd cachemesh
 
 # Install development dependencies
 npm install
@@ -78,10 +78,10 @@ npm run build
 ## Quickstart & Usage
 
 ### 1. Starting the Server
-Start the MiniCache daemon via CLI:
+Start the CacheMesh daemon via CLI:
 ```bash
 npm start
-# [MiniCache] Server listening on 127.0.0.1:6380
+# [CacheMesh] Server listening on 127.0.0.1:6380
 ```
 
 To run the interactive CLI playground (connects to running server):
@@ -99,7 +99,7 @@ npm run example:raw
 ```
 Or start programmatically:
 ```ts
-import { TCPServer } from "minicache";
+import { TCPServer } from "cachemesh";
 
 const server = new TCPServer({ port: 6380, host: "127.0.0.1" });
 await server.listen();
@@ -108,13 +108,13 @@ await server.listen();
 ---
 
 ### 2. Using the Node.js Client SDK
-MiniCache ships with a typed, Promise-based client:
+CacheMesh ships with a typed, Promise-based client:
 
 ```ts
-import { MiniCacheClient } from "minicache/client";
+import { CacheMeshClient } from "cachemesh/client";
 
 async function run() {
-  const client = new MiniCacheClient({ host: "127.0.0.1", port: 6380 });
+  const client = new CacheMeshClient({ host: "127.0.0.1", port: 6380 });
   await client.connect();
 
   // Store a string value with a 60-second TTL
@@ -143,7 +143,7 @@ run();
 ---
 
 ### 3. Language-Agnostic Raw TCP Usage
-Because MiniCache uses newline-delimited JSON, any programming language (Python, Go, Rust, Java) or command-line tool (`nc`, `telnet`) can communicate with the server directly:
+Because CacheMesh uses newline-delimited JSON, any programming language (Python, Go, Rust, Java) or command-line tool (`nc`, `telnet`) can communicate with the server directly:
 
 ```bash
 # Connect using netcat
@@ -186,7 +186,7 @@ Every command sent over TCP is a single JSON object terminated by a newline (`\n
 ## Systems Architecture Deep Dive
 
 ### 1. $O(1)$ LRU Eviction via ECMAScript Insertion Order
-The ECMAScript specification guarantees that `Map` keys are iterated in insertion order. MiniCache exploits this to implement Least Recently Used (LRU) caching with $O(1)$ performance:
+The ECMAScript specification guarantees that `Map` keys are iterated in insertion order. CacheMesh exploits this to implement Least Recently Used (LRU) caching with $O(1)$ performance:
 * **Access/Update (MRU)**: When a key is read or updated, it is deleted and re-inserted:
   ```ts
   this.store.delete(key);
@@ -222,8 +222,8 @@ npm run bench
 | Layer | Iterations | Throughput (Ops/sec) | Avg Latency | Median ($p50$) | 95th %ile ($p95$) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **1. Direct JavaScript `Map`** | 20,000 | **4,642,000 ops/s** | 0.0002 ms (200 ns) | 0.0001 ms | 0.0003 ms |
-| **2. MiniCache Engine** | 20,000 | **1,876,000 ops/s** | 0.0005 ms (500 ns) | 0.0003 ms | 0.0008 ms |
-| **3. MiniCache TCP (Loopback)** | 2,000 | **8,400 ops/s** | 0.1193 ms (119 µs) | 0.1051 ms | 0.1939 ms |
+| **2. CacheMesh Engine** | 20,000 | **1,876,000 ops/s** | 0.0005 ms (500 ns) | 0.0003 ms | 0.0008 ms |
+| **3. CacheMesh TCP (Loopback)** | 2,000 | **8,400 ops/s** | 0.1193 ms (119 µs) | 0.1051 ms | 0.1939 ms |
 
 ### Architectural Insights
 1. **The Network Boundary (240x Latency Jump)**: Moving from in-process memory (~500ns) to TCP loopback (~119µs) incurs overhead from JSON serialization, kernel context switches (`send`/`recv` syscalls), TCP stack traversal, and event loop scheduling.
@@ -233,7 +233,7 @@ npm run bench
 
 ## Testing
 
-MiniCache maintains comprehensive unit and integration test coverage using [Vitest](https://vitest.dev/):
+CacheMesh maintains comprehensive unit and integration test coverage using [Vitest](https://vitest.dev/):
 
 ```bash
 # Run all 75 unit & integration tests
@@ -266,7 +266,7 @@ npm run format
 ## Project Structure
 
 ```
-minicache/
+cachemesh/
 ├── src/
 │   ├── index.ts                 # Main entry point & CLI bootstrapper
 │   ├── server/
@@ -295,7 +295,8 @@ minicache/
 │   └── benchmark.ts             # Empirical performance benchmark runner
 ├── examples/
 │   ├── basic-usage.ts           # High-level Client SDK example
-│   └── raw-tcp-client.ts        # Low-level raw socket communication example
+│   ├── raw-tcp-client.ts        # Low-level raw socket communication example
+│   └── interactive-cli.ts       # Interactive redis-cli style terminal REPL
 ├── docs/
 │   ├── architecture.md          # Request lifecycle & systems internals
 │   └── interview-guide.md       # Senior systems engineering interview prep
@@ -312,7 +313,7 @@ minicache/
 
 ### Version 1 Design Decisions
 * **Entry-Count vs. Byte Memory**: Version 1 bounds memory strictly by entry count. In a dynamic GC runtime like V8, precise byte-level object calculation is computationally expensive and imprecise.
-* **Single Node In-Memory**: MiniCache is designed for single-node caching and does not implement clustering, Raft consensus, or distributed replication.
+* **Single Node In-Memory**: CacheMesh is designed for single-node caching and does not implement clustering, Raft consensus, or distributed replication.
 * **Non-Persistent**: All data resides in RAM. No AOF (Append-Only File) or RDB snapshots are written to disk.
 
 ### Future Roadmap
