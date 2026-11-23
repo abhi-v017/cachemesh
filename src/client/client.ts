@@ -16,12 +16,12 @@ interface PendingRequest {
 }
 
 /**
- * Lightweight, Promise-based TCP client for MiniCache.
+ * Lightweight, Promise-based TCP client for CacheMesh.
  *
  * Implements pipelined command execution over a single TCP socket
  * with FIFO response correlation.
  */
-export class MiniCacheClient {
+export class CacheMeshClient {
   private readonly host: string;
   private readonly port: number;
   private readonly connectTimeoutMs: number;
@@ -292,3 +292,8 @@ export class MiniCacheClient {
     return this.socket !== null && !this.socket.destroyed;
   }
 }
+
+/**
+ * Backward-compatibility alias for MiniCacheClient.
+ */
+export const MiniCacheClient = CacheMeshClient;

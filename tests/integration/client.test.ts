@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { TCPServer } from "../../src/server/tcp-server.js";
-import { MiniCacheClient } from "../../src/client/client.js";
+import { CacheMeshClient } from "../../src/client/client.js";
 
-describe("MiniCacheClient Integration", () => {
+describe("CacheMeshClient Integration", () => {
   let server: TCPServer;
-  let client: MiniCacheClient;
+  let client: CacheMeshClient;
   let serverPort: number;
 
   beforeEach(async () => {
     server = new TCPServer({ port: 0, host: "127.0.0.1" });
     const bound = await server.listen(0, "127.0.0.1");
     serverPort = bound.port;
-    client = new MiniCacheClient({ port: serverPort, host: "127.0.0.1" });
+    client = new CacheMeshClient({ port: serverPort, host: "127.0.0.1" });
   });
 
   afterEach(async () => {

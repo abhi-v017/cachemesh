@@ -1,5 +1,5 @@
 {
-  "name": "minicache",
+  "name": "cachemesh",
   "version": "1.0.0",
   "type": "module",
   "description": "Lightweight, Redis-inspired in-memory caching server built from scratch in TypeScript",

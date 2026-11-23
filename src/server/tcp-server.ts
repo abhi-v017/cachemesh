@@ -12,7 +12,7 @@ export interface TCPServerOptions {
 }
 
 /**
- * High-performance TCP server for MiniCache.
+ * High-performance TCP server for CacheMesh.
  *
  * Coordinates socket lifecycles, stream framing, and command dispatching.
  */
@@ -38,7 +38,7 @@ export class TCPServer {
 
     this.server.on("error", (err) => {
       // Server-level network error handling
-      console.error(`[MiniCache] TCP Server error: ${err.message}`);
+      console.error(`[CacheMesh] TCP Server error: ${err.message}`);
     });
   }
 
@@ -126,7 +126,7 @@ export class TCPServer {
       // Client abruptly terminated connection (e.g. ECONNRESET)
       // We clean up quietly without terminating the server process
       if (err.code !== "ECONNRESET") {
-        console.warn(`[MiniCache] Client socket error: ${err.message}`);
+        console.warn(`[CacheMesh] Client socket error: ${err.message}`);
       }
     });
 
@@ -159,3 +159,8 @@ export class TCPServer {
     return this.handler;
   }
 }
+
+/**
+ * Semantic alias for TCPServer.
+ */
+export const CacheMeshServer = TCPServer;

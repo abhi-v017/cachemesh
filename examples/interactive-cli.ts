@@ -1,16 +1,16 @@
 import readline from "readline";
-import { MiniCacheClient } from "../src/client/client.js";
+import { CacheMeshClient } from "../src/client/client.js";
 
 async function main() {
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 6380;
   const host = process.env.HOST || "127.0.0.1";
 
-  const client = new MiniCacheClient({ host, port });
+  const client = new CacheMeshClient({ host, port });
 
   console.log("================================================================");
-  console.log("             MiniCache Interactive CLI Playground ⚡            ");
+  console.log("             CacheMesh Interactive CLI Playground ⚡            ");
   console.log("================================================================");
-  console.log(`Connecting to MiniCache at ${host}:${port}...`);
+  console.log(`Connecting to CacheMesh at ${host}:${port}...`);
 
   try {
     await client.connect();
@@ -35,7 +35,7 @@ async function main() {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: "minicache> ",
+    prompt: "cachemesh> ",
   });
 
   rl.prompt();

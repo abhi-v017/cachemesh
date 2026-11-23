@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { TCPServer } from "../../src/server/tcp-server.js";
-import { MiniCacheClient } from "../../src/client/client.js";
+import { CacheMeshClient } from "../../src/client/client.js";
 
 describe("End-to-End Real-World Workload", () => {
   let server: TCPServer;
@@ -26,10 +26,10 @@ describe("End-to-End Real-World Workload", () => {
 
   it("should handle multi-client concurrent operations, evictions, and TTL gracefully", async () => {
     const CLIENT_COUNT = 5;
-    const clients: MiniCacheClient[] = [];
+    const clients: CacheMeshClient[] = [];
 
     for (let i = 0; i < CLIENT_COUNT; i++) {
-      const client = new MiniCacheClient({ port: serverPort, host: "127.0.0.1" });
+      const client = new CacheMeshClient({ port: serverPort, host: "127.0.0.1" });
       await client.connect();
       clients.push(client);
     }

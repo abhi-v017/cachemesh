@@ -2,7 +2,7 @@ import net from "net";
 import { TCPServer } from "../src/index.js";
 
 async function main() {
-  console.log("=== MiniCache Raw TCP (Language-Agnostic) Example ===\n");
+  console.log("=== CacheMesh Raw TCP (Language-Agnostic) Example ===\n");
 
   // Start server
   const server = new TCPServer({ port: 6381, host: "127.0.0.1" });

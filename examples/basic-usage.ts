@@ -1,15 +1,15 @@
-import { TCPServer, MiniCacheClient } from "../src/index.js";
+import { TCPServer, CacheMeshClient } from "../src/index.js";
 
 async function main() {
-  console.log("=== MiniCache Basic Usage Example ===\n");
+  console.log("=== CacheMesh Basic Usage Example ===\n");
 
   // 1. Start an in-process TCP server on port 6382 (so it won't conflict with any server on 6380)
   const server = new TCPServer({ port: 6382, host: "127.0.0.1" });
   await server.listen();
   console.log("1. Server booted on 127.0.0.1:6382");
 
-  // 2. Connect a MiniCache client
-  const client = new MiniCacheClient({ port: 6382, host: "127.0.0.1" });
+  // 2. Connect a CacheMesh client
+  const client = new CacheMeshClient({ port: 6382, host: "127.0.0.1" });
   await client.connect();
   console.log("2. Client connected successfully");
 

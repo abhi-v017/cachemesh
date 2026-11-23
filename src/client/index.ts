@@ -1,1 +1,1 @@
-export { MiniCacheClient, ClientOptions } from "./client.js";
+export { CacheMeshClient, MiniCacheClient, ClientOptions } from "./client.js";

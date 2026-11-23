@@ -2,7 +2,7 @@ import os from "os";
 import { performance } from "perf_hooks";
 import { CacheEngine } from "../src/engine/cache-engine.js";
 import { TCPServer } from "../src/server/tcp-server.js";
-import { MiniCacheClient } from "../src/client/client.js";
+import { CacheMeshClient } from "../src/client/client.js";
 
 interface LatencyStats {
   opsPerSec: number;
@@ -70,7 +70,7 @@ async function benchmarkCacheEngine(iterations: number): Promise<LatencyStats> {
 async function benchmarkTCPClient(iterations: number): Promise<LatencyStats> {
   const server = new TCPServer({ port: 0, host: "127.0.0.1", engineOptions: { maxEntries: 2000 } });
   const bound = await server.listen(0, "127.0.0.1");
-  const client = new MiniCacheClient({ port: bound.port, host: "127.0.0.1" });
+  const client = new CacheMeshClient({ port: bound.port, host: "127.0.0.1" });
   await client.connect();
 
   const latencies: number[] = new Array(iterations);
@@ -102,7 +102,7 @@ function printRow(name: string, stats: LatencyStats) {
 
 async function run() {
   console.log("===============================================================================");
-  console.log("                       MiniCache Performance Benchmark                         ");
+  console.log("                       CacheMesh Performance Benchmark                         ");
   console.log("===============================================================================");
   console.log(`OS: ${os.type()} ${os.release()} (${os.arch()})`);
   console.log(`CPU: ${os.cpus()[0]?.model || "Standard"} (${os.cpus().length} cores)`);
@@ -127,8 +127,8 @@ async function run() {
     "|----------------------------|------------|---------------|-------------|-------------|-------------|"
   );
   printRow("1. Direct JavaScript Map", mapStats);
-  printRow("2. MiniCache Engine", engineStats);
-  printRow("3. MiniCache TCP (Loopback)", tcpStats);
+  printRow("2. CacheMesh Engine", engineStats);
+  printRow("3. CacheMesh TCP (Loopback)", tcpStats);
   console.log(
     "|----------------------------|------------|---------------|-------------|-------------|-------------|\n"
   );

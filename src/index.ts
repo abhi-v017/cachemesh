@@ -14,12 +14,12 @@ export * from "./server/tcp-server.js";
 export * from "./client/client.js";
 
 /**
- * Boots the default MiniCache server when run directly.
+ * Boots the default CacheMesh server when run directly.
  */
 export async function startServer(port = 6380, host = "127.0.0.1"): Promise<TCPServer> {
   const server = new TCPServer({ port, host });
   const bound = await server.listen(port, host);
-  console.log(`[MiniCache] Server listening on ${bound.host}:${bound.port}`);
+  console.log(`[CacheMesh] Server listening on ${bound.host}:${bound.port}`);
   return server;
 }
 
@@ -28,7 +28,7 @@ if (process.argv[1] && process.argv[1].endsWith("index.js")) {
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 6380;
   const host = process.env.HOST || "127.0.0.1";
   startServer(port, host).catch((err) => {
-    console.error("[MiniCache] Startup error:", err);
+    console.error("[CacheMesh] Startup error:", err);
     process.exit(1);
   });
 }
